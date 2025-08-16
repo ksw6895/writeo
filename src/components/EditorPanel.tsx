@@ -8,6 +8,20 @@
   }
 
   export default function EditorPanel({ value, onChange, onLoadDemo }: Props) {
+    function normalizeRoles(v: string): string {
+      // Normalize role tokens at start of lines: h/h1/e+/e-/r/c/d/t/m -> uppercase
+      return v.replace(/^(h\d*|e\+|e-|r|c|d|t|m)(\s*:\s*)/gim, (_m, role: string, sep: string) => {
+        let out = role
+        if (role[0].toLowerCase() === 'h') out = 'H' + role.slice(1)
+        else out = role.toUpperCase()
+        return out + sep
+      })
+    }
+
+    function handleChange(next: string) {
+      const normalized = normalizeRoles(next)
+      onChange(normalized)
+    }
     return (
       <div className="panel">
         <header className="row">
@@ -23,7 +37,7 @@
             className="editor"
             spellCheck={false}
             value={value}
-            onChange={e=>onChange(e.target.value)}
+            onChange={e=>handleChange(e.target.value)}
             placeholder="예) H: 가설 @p=0.2
 E+: 근거 한 줄 @ref=H1, @grade=moderate+
 E-: 반증 한 줄 @ref=H1, @LR=0.33

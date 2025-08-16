@@ -111,15 +111,29 @@ function parseMeta(s: string, warnings: string[], lineNo: number): Record<string
   const parts = s.split(/\s*,\s*/);
   for (const part of parts) {
     if (!part) continue;
-    const kv = part.split('=');
-    if (kv.length === 1) {
-      meta[kv[0]] = true;
+    // Accept both '=' and ':' as key-value delimiters (lenient)
+    let key: string | null = null;
+    let val: string | null = null;
+    const eqPos = part.indexOf('=');
+    const colonPos = part.indexOf(':');
+    if (eqPos >= 0) {
+      key = part.slice(0, eqPos).trim();
+      val = part.slice(eqPos + 1).trim();
+    } else if (colonPos >= 0) {
+      key = part.slice(0, colonPos).trim().replace(/^@/, '');
+      val = part.slice(colonPos + 1).trim();
     } else {
-      const key = kv[0].trim();
-      const val = kv.slice(1).join('=').trim();
+      // flag-like meta e.g., @draft
+      key = part.trim().replace(/^@/, '');
+      val = 'true';
+    }
+    // Normalize leading '@' in keys and coerce numeric values
+    if (key) {
+      key = key.replace(/^@/, '');
       const asNum = Number(val);
-      if (!Number.isNaN(asNum) && /^-?\d+(\.\d+)?$/.test(val)) meta[key] = asNum;
-      else meta[key] = val;
+      if (val != null && !Number.isNaN(asNum) && /^-?\d+(\.\d+)?$/.test(val)) meta[key] = asNum;
+      else if (val != null) meta[key] = val;
+      else meta[key] = true;
     }
   }
   return meta;

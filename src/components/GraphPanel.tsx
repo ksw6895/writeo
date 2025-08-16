@@ -33,11 +33,15 @@ export default function GraphPanel({ parsed, computed }: Props) {
 
     // Build H nodes
     const hIndex = new Map(computed.hResults.map(h=>[h.hid, h]))
-    for (const h of parsed.statements.filter(s=>s.role==='H')) {
+    const hStmts = parsed.statements.filter(s=>s.role==='H')
+    const hIds = new Set<string>()
+    for (const h of hStmts) {
       const res = h.label ? hIndex.get(h.label) : undefined
       const prior = res?.prior.p!=null ? res?.prior.p.toFixed(3) : '—'
       const post  = res?.posterior.p!=null ? res?.posterior.p.toFixed(3) : '—'
-      elements.push({ data: { id: h.label || h.id, label: `${h.label||'H?'}\n${h.text}\n${prior}→${post}` }, classes: 'h' })
+      const nodeId = h.label || h.id
+      elements.push({ data: { id: nodeId, label: `${h.label||'H?'}\n${h.text}\n${prior}→${post}` }, classes: 'h' })
+      hIds.add(nodeId)
     }
 
     // Evidence nodes and edges
@@ -48,7 +52,9 @@ export default function GraphPanel({ parsed, computed }: Props) {
       elements.push({ data: { id, label: label || e.role }, classes: cls })
       const refs: string[] = Array.isArray(e.meta.ref) ? e.meta.ref : []
       for (const r of refs) {
-        elements.push({ data: { id: `${id}->${r}`, source: id, target: r } })
+        const tgt = String(r).trim()
+        if (!tgt || !hIds.has(tgt)) continue // ignore dangling edges to non-existent H
+        elements.push({ data: { id: `${id}->${tgt}`, source: id, target: tgt } })
       }
     }
 

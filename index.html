@@ -158,6 +158,22 @@ R:  lo(H1) &lt;&lt;+&gt;&gt; ln(LR 빈맥) + ln(LR D-dimer)
 D:  if p(H1) &lt; 0.01 =&gt; CTPA 생략
 T:  결과 확인 후 @outcome=false @time=2025-08-17</pre></div>
 
+        <h2>예시 모음</h2>
+        <div class="grid">
+          <div class="card code"><pre>H: 오늘은 피자를 먹어야 함 @p=0.7
+E+: 일주일째 피자를 못 먹음 @ref=H1, @grade=moderate+
+E-: 냉장고에 반찬이 많음 @ref=H1, @LR=0.5
+D: p(H1) ≥ 0.6 이면 피자 주문</pre></div>
+          <div class="card code"><pre>H: 오늘 집중이 잘 될 것 @p=0.5
+E+: 7시간 숙면 @ref=H1, @grade=strong+
+E-: 오전 회의 3개 @ref=H1, @grade=moderate-
+T: 점심 이후 딥워크 2시간 확보</pre></div>
+          <div class="card code"><pre>H: 서비스 A 기능 X가 매출에 기여 @p=0.2
+E+: 베타 사용자 잔존 증가 @ref=H1, @LR=3
+E-: 경쟁사도 유사 효과 보고 @ref=H1, @LR=0.6, @kappa=0.7
+D: p(H1) ≥ 0.5 이면 전량 롤아웃</pre></div>
+        </div>
+
         <p class="note">즐거운 작성 되세요! | Happy structured writing.</p>
       </div>
 
