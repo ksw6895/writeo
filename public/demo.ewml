@@ -1,0 +1,8 @@
+
+M: doc="Demo-PE-Case"; ver=0.1; author=각하; time=2025-08-16
+H1: PE 의심 환자 @p=0.02
+E+: 빈맥 @ref=H1 @grade=weak+
+E-: D-dimer(-) @ref=H1 @grade=strong-
+R:  lo(H1) <<+>> ln(LR 빈맥) + ln(LR D-dimer)
+D:  if p(H1) < 0.01 => CTPA 생략
+T:  결과 확인 후 @outcome=false @time=2025-08-17

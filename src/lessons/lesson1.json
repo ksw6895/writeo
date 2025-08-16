@@ -1,0 +1,22 @@
+{
+  "id": "lesson1",
+  "title": "EWML 레슨 1 — H/E±/D 기본",
+  "steps": [
+    {
+      "id": "s1",
+      "desc": "H(가설)을 1개 작성하고 prior(@p 또는 @lo)을 지정하세요.",
+      "check": "hasHWithPrior"
+    },
+    {
+      "id": "s2",
+      "desc": "E+(지지 근거)을 1개 작성하고 H를 @ref로 연결하세요. (grade 또는 LR 포함)",
+      "check": "hasEPlusWithRef"
+    },
+    {
+      "id": "s3",
+      "desc": "posterior p가 0.6 이상이 되도록 근거를 조정하세요. (D에 임계치도 적어보세요)",
+      "check": "posteriorAbove",
+      "threshold": 0.6
+    }
+  ]
+}

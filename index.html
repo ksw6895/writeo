@@ -1,0 +1,274 @@
+
+<!doctype html>
+<html lang="ko" data-lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EWML Guide</title>
+    <style>
+      :root {
+        --bg: #0f1218;
+        --panel: #151a22;
+        --text: #e6eaf0;
+        --muted: #9aa4b2;
+        --accent: #7aa2ff;
+        --good: #34c38f;
+        --bad: #f46a6a;
+        --border: #232a36;
+      }
+      html, body { margin:0; padding:0; background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .page { max-width: 980px; margin: 0 auto; padding: 24px; }
+      h1, h2, h3 { margin: 0 0 8px; }
+      h1 { font-size: 28px; }
+      h2 { font-size: 20px; margin-top: 22px; }
+      h3 { font-size: 16px; margin-top: 18px; color: var(--muted); }
+      p { line-height: 1.6; color: #d6dbe3; }
+      .note { color: var(--muted); font-size: 14px; }
+      .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background: #0c0f14; border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow: auto; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { text-align: left; border-bottom: 1px solid var(--border); padding: 8px; }
+      th { color: var(--muted); font-weight: 600; }
+      .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+      .role { color: #c586c0; font-weight: 700; }
+      .good { color: var(--good); }
+      .bad { color: var(--bad); }
+      .muted { color: var(--muted); }
+      .top { display:flex; align-items:center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+      .top .right { display:flex; gap: 8px; align-items:center; }
+      .btn { background:#1e2633; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-weight:600; cursor: pointer; }
+      .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+      .seg button { background:#121722; color:var(--muted); border:0; padding:8px 10px; font-weight:700; letter-spacing:.2px; cursor:pointer; }
+      .seg button.active { background:#1e2633; color:var(--text); }
+      /* Language containers */
+      .lang { display:none; }
+      html[data-lang="ko"] .lang-ko { display:block; }
+      html[data-lang="en"] .lang-en { display:block; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="top">
+        <h1>EWML Guide <span class="pill">v0.1</span></h1>
+        <div class="right">
+          <div class="seg" role="tablist" aria-label="Language">
+            <button id="btn-ko" class="active" onclick="setLang('ko')">한국어</button>
+            <button id="btn-en" onclick="setLang('en')">English</button>
+          </div>
+          <a class="btn" href="/pad.html" title="Open EWML Pad">🧪 Open Pad</a>
+          <a class="btn" href="/demo.ewml" title="Download demo">📄 Demo</a>
+        </div>
+      </div>
+
+      <!-- Korean -->
+      <div class="lang lang-ko">
+        <p class="note">External Working Memory Language — 라인 기반 구조화된 작성으로 가설, 근거, 결정/작업을 한 화면에서 관리합니다. 로그-오즈 기반 업데이트로 “생각의 뼈대”를 가볍게 수치화합니다.</p>
+
+        <div class="card" style="margin-top:14px;">
+          <h2>Introduction — 전체 큰 그림</h2>
+          <p>
+            EWML은 “외부 작업 기억(External Working Memory)”를 위한 미니 언어입니다. 한 줄에 하나의 주장/근거/결정을 기록하고,
+            간단한 메타데이터(<code>@p</code>, <code>@LR</code>, <code>@ref</code> 등)로 의미를 붙입니다. <strong>H</strong>는 가설,
+            <strong>E±</strong>는 찬반 근거, <strong>D/T</strong>는 결정/작업입니다. 앱은 H별로 근거를 모아
+            <em>logit</em>과 <em>우도비(LR)</em>를 이용해 posterior를 계산합니다. 노트와 가벼운 베이즈 업데이트가 하나로 붙은 형태죠.
+          </p>
+          <p>
+            목표는 두 가지입니다: (1) 생각을 구조화해 잊지 않기, (2) 근거의 방향/강도를 정직하게 반영하기. 너무 거창한 정리/모델링이 아니라
+            “적당히 Geek”한 실용 도구를 지향합니다. 즐거운 작성 되세요!
+          </p>
+        </div>
+
+        <h2>빠른 시작</h2>
+        <div class="card">
+          <p>각 문장은 한 줄: <strong class="role">역할</strong>: 내용 <span class="muted">@메타=값, ...</span></p>
+          <div class="code"><pre>H: PE 의심 환자 @p=0.02
+E+: 빈맥 @ref=H1, @grade=moderate+
+E-: D-dimer(-) @ref=H1, @LR=0.33
+D: p(H1) &gt;= 0.6 이면 CTPA 고려</pre></div>
+          <p>
+            - <span class="role">H</span>: 가설. <code>@p</code> 또는 <code>@lo</code>로 사전확률 설정(자동 H1,H2…).<br/>
+            - <span class="role good">E+</span>/<span class="role bad">E-</span>: 찬/반 근거. <code>@ref</code>로 H 연결, <code>@LR</code> 또는 <code>@grade</code>로 강도 설정.<br/>
+            - <span class="role">D</span>/<span class="role">T</span>: 결정/작업. 요약/그래프에 표시(계산에는 미반영).
+          </p>
+          <p class="note">팁: 상단의 “🧪 Open Pad”로 편집기를 열고, 샘플을 불러와 바로 실습하세요.</p>
+        </div>
+
+        <h2>역할(ROLE)</h2>
+        <div class="grid">
+          <div class="card"><h3><span class="role">H</span> — 가설</h3><p>자동 레이블(H1,H2…) 또는 <code>H2:</code>처럼 명시. <code>@p</code>(0–1)나 <code>@lo</code>(logit) 중 하나를 적으면 나머지는 자동 동기화.</p></div>
+          <div class="card"><h3><span class="role">E+</span>/<span class="role">E-</span> — 근거</h3><p><code>@ref</code>로 대상 H 나열(쉼표/세미콜론). 강도는 <code>@LR</code> 또는 <code>@grade</code>, 가중치는 <code>@kappa</code>(선택).</p></div>
+          <div class="card"><h3><span class="role">D</span> — 결정</h3><p>임계치/정책을 메모. v0.1에서는 계산에 영향 없음.</p></div>
+          <div class="card"><h3><span class="role">T</span> — 작업</h3><p>실행 항목/후속 조치. <code>@time</code> 등 메타는 그대로 보존.</p></div>
+          <div class="card"><h3><span class="role">R</span> — 설명/수식</h3><p>서술/도출/관계 표기. v0.1에서는 표시 전용.</p></div>
+          <div class="card"><h3><span class="role">M</span> — 문서 메타</h3><p><code>M: doc="Case-123"; ver=0.1; author=…; time=…</code> 등. 표시 전용.</p></div>
+        </div>
+
+        <h2>계산 원리</h2>
+        <div class="card">
+          <p>가설별로 근거의 ln(LR)를 누적해 posterior를 계산합니다.</p>
+          <div class="code"><pre>lo_post = lo_prior + Σ ( ln(LR) · κ )
+p = 1 / (1 + e^{-lo})</pre></div>
+          <p class="note">권장: E−에는 LR&lt;1, E+에는 LR&gt;1. Console에서 일반적 오류를 경고합니다.</p>
+        </div>
+
+        <h2>Grade ↔︎ LR</h2>
+        <div class="card">
+          <table>
+            <thead><tr><th>Grade</th><th>LR</th></tr></thead>
+            <tbody>
+              <tr><td>very-strong+</td><td>10</td></tr>
+              <tr><td>strong+</td><td>5</td></tr>
+              <tr><td>moderate+</td><td>3</td></tr>
+              <tr><td>weak+</td><td>1.5</td></tr>
+              <tr><td>neutral</td><td>1</td></tr>
+              <tr><td>weak-</td><td>≈ 0.67 (1/1.5)</td></tr>
+              <tr><td>moderate-</td><td>≈ 0.33 (1/3)</td></tr>
+              <tr><td>strong-</td><td>0.2 (1/5)</td></tr>
+              <tr><td>very-strong-</td><td>0.1 (1/10)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>문법 규칙</h2>
+        <div class="card"><p>- 한 줄 하나의 문장: <code>ROLE: text @k=v, @k2=v2</code><br/>- 메타는 쉼표로 분리, 숫자는 자동으로 숫자형으로 파싱<br/>- <code>@ref</code>는 <code>H1,H2</code> 또는 <code>H1; H2</code><br/>- <code>H:</code>는 자동 번호, <code>H2:</code>는 명시 레이블</p></div>
+
+        <h2>앱 패널</h2>
+        <div class="grid">
+          <div class="card"><h3>Editor</h3><p>EWML 작성. “샘플 불러오기”, “복사” 버튼 제공.</p></div>
+          <div class="card"><h3>Outline</h3><p>H/D/T 요약. H별 prior → posterior, Σ ln(LR) 표시.</p></div>
+          <div class="card"><h3>Graph</h3><p>H 노드와 E± 노드, 증거→가설 간선 시각화.</p></div>
+          <div class="card"><h3>Console</h3><p><code>@ref</code> 누락, 잘못된 LR, prior 없음, <code>@p</code>/<code>@lo</code> 불일치 등을 경고.</p></div>
+        </div>
+
+        <h2>베스트 프랙티스</h2>
+        <div class="card"><p>- 명확한 가설 + 현실적인 prior로 시작<br/>- 속도는 <code>@grade</code>, 정밀도는 <code>@LR</code><br/>- 근거는 가급적 원자적으로(E± 한 줄 = 하나의 관찰)<br/>- 상관/불확실 근거는 <code>@kappa</code>로 다운웨이트<br/>- 여러 H에 영향이면 <code>@ref</code>에 모두 명시</p></div>
+
+        <h2>제한 (v0.1)</h2>
+        <div class="card"><p>- 사이클 감지 없음, R/C/M은 표시 전용<br/>- 근거 독립성 가정(ln-odds 합산). 의존성 모델링 미지원<br/>- D/T는 확률 계산에 영향 없음</p></div>
+
+        <h2>미니 데모</h2>
+        <div class="card code"><pre>M: doc=&quot;Demo-PE-Case&quot;; ver=0.1; author=각하; time=2025-08-16
+H1: PE 의심 환자 @p=0.02
+E+: 빈맥 @ref=H1 @grade=weak+
+E-: D-dimer(-) @ref=H1 @grade=strong-
+R:  lo(H1) &lt;&lt;+&gt;&gt; ln(LR 빈맥) + ln(LR D-dimer)
+D:  if p(H1) &lt; 0.01 =&gt; CTPA 생략
+T:  결과 확인 후 @outcome=false @time=2025-08-17</pre></div>
+
+        <p class="note">즐거운 작성 되세요! | Happy structured writing.</p>
+      </div>
+
+      <!-- English -->
+      <div class="lang lang-en">
+        <p class="note">External Working Memory Language — a line-based, structured way to capture hypotheses, evidence, and decisions, with lightweight log-odds updates.</p>
+
+        <div class="card" style="margin-top:14px;">
+          <h2>Introduction — The Big Picture</h2>
+          <p>
+            EWML is a tiny language for your external working memory. Each line holds a claim/evidence/decision with compact metadata
+            like <code>@p</code>, <code>@LR</code>, and <code>@ref</code>. <strong>H</strong> is a hypothesis, <strong>E±</strong> are pro/contra evidences,
+            and <strong>D/T</strong> are decisions/tasks. The app aggregates evidence per H and computes posterior via logits and likelihood ratios.
+          </p>
+          <p>
+            Goals: (1) structure thoughts so you don’t lose them, (2) reflect direction/strength of evidence honestly. It’s intentionally lightweight — a mildly geeky, practical tool. Enjoy!
+          </p>
+        </div>
+
+        <h2>Quickstart</h2>
+        <div class="card">
+          <p>One line per statement: <strong class="role">ROLE</strong>: text <span class="muted">@meta=value, ...</span></p>
+          <div class="code"><pre>H: Suspect PE @p=0.02
+E+: Tachycardia @ref=H1, @grade=moderate+
+E-: D-dimer negative @ref=H1, @LR=0.33
+D: if p(H1) &gt;= 0.6 =&gt; consider CTPA</pre></div>
+          <p>- <span class="role">H</span>: hypothesis. Set prior via <code>@p</code> or <code>@lo</code> (auto-numbered H1,H2…).<br/>- <span class="role good">E+</span>/<span class="role bad">E-</span>: pro/contra evidence. Link via <code>@ref</code>; set <code>@LR</code> or <code>@grade</code>.<br/>- <span class="role">D</span>/<span class="role">T</span>: decisions/tasks. Shown in Outline; not used in math.</p>
+          <p class="note">Tip: Use “🧪 Open Pad” to try the editor.</p>
+        </div>
+
+        <h2>Roles</h2>
+        <div class="grid">
+          <div class="card"><h3><span class="role">H</span> — Hypothesis</h3><p>Auto labels (H1,H2…) or explicit <code>H2:</code>. Prior via <code>@p</code> or <code>@lo</code>; the other is auto-synced.</p></div>
+          <div class="card"><h3><span class="role">E+</span>/<span class="role">E-</span> — Evidence</h3><p>List targets in <code>@ref</code>. Strength via <code>@LR</code> or <code>@grade</code>; optional weight <code>@kappa</code>.</p></div>
+          <div class="card"><h3><span class="role">D</span> — Decision</h3><p>Thresholds/policies notes. Display-only in v0.1.</p></div>
+          <div class="card"><h3><span class="role">T</span> — Task</h3><p>Follow-ups and actions. Metadata like <code>@time</code> kept as-is.</p></div>
+          <div class="card"><h3><span class="role">R</span> — Rationale/Relation</h3><p>Explanations or equations. Display-only in v0.1.</p></div>
+          <div class="card"><h3><span class="role">M</span> — Document Meta</h3><p><code>M: doc=&quot;Case-123&quot;; ver=0.1; author=…; time=…</code>. Display-only.</p></div>
+        </div>
+
+        <h2>Calculation</h2>
+        <div class="card"><p>Aggregate ln(LR) per hypothesis to update posterior.</p><div class="code"><pre>lo_post = lo_prior + Σ ( ln(LR) · κ )
+p = 1 / (1 + e^{-lo})</pre></div><p class="note">Heuristics: E− with LR&lt;1, E+ with LR&gt;1. Console warns on common issues.</p></div>
+
+        <h2>Grades ↔︎ LR</h2>
+        <div class="card"><table><thead><tr><th>Grade</th><th>LR</th></tr></thead><tbody>
+          <tr><td>very-strong+</td><td>10</td></tr>
+          <tr><td>strong+</td><td>5</td></tr>
+          <tr><td>moderate+</td><td>3</td></tr>
+          <tr><td>weak+</td><td>1.5</td></tr>
+          <tr><td>neutral</td><td>1</td></tr>
+          <tr><td>weak-</td><td>≈ 0.67</td></tr>
+          <tr><td>moderate-</td><td>≈ 0.33</td></tr>
+          <tr><td>strong-</td><td>0.2</td></tr>
+          <tr><td>very-strong-</td><td>0.1</td></tr>
+        </tbody></table></div>
+
+        <h2>Syntax</h2>
+        <div class="card"><p>- One line per statement: <code>ROLE: text @k=v, @k2=v2</code><br/>- Comma-separated metadata; numeric values parsed as numbers<br/>- <code>@ref</code> accepts <code>H1,H2</code> or <code>H1; H2</code><br/>- <code>H:</code> auto-numbers; <code>H2:</code> sets explicitly</p></div>
+
+        <h2>App Panels</h2>
+        <div class="grid">
+          <div class="card"><h3>Editor</h3><p>Write EWML. “Load Sample” and “Copy” available.</p></div>
+          <div class="card"><h3>Outline</h3><p>Summarizes H/D/T with prior → posterior and Σ ln(LR).</p></div>
+          <div class="card"><h3>Graph</h3><p>H nodes and E± nodes with edges to referenced H.</p></div>
+          <div class="card"><h3>Console</h3><p>Warns on missing <code>@ref</code>, invalid LR, missing prior, inconsistent <code>@p</code>/<code>@lo</code>.</p></div>
+        </div>
+
+        <h2>Best Practices</h2>
+        <div class="card"><p>- Start with one clear hypothesis and a realistic prior<br/>- Use <code>@grade</code> for speed; <code>@LR</code> for precision<br/>- Keep evidence atomic (one observation per E± line)<br/>- Downweight correlated/uncertain evidence with <code>@kappa</code><br/>- If evidence pertains to multiple Hs, list them all in <code>@ref</code></p></div>
+
+        <h2>Limits (v0.1)</h2>
+        <div class="card"><p>- No cycle detection; R/C/M display-only<br/>- Assumes evidence independence via ln-odds sum; no dependency modeling
+        <br/>- D/T do not affect probabilities</p></div>
+
+        <h2>Mini Demo</h2>
+        <div class="card code"><pre>M: doc=&quot;Demo-PE-Case&quot;; ver=0.1; author=Gakha; time=2025-08-16
+H1: Suspect PE @p=0.02
+E+: Tachycardia @ref=H1 @grade=weak+
+E-: D-dimer(-) @ref=H1 @grade=strong-
+R:  lo(H1) &lt;&lt;+&gt;&gt; ln(LR tachy) + ln(LR d-dimer)
+D:  if p(H1) &lt; 0.01 =&gt; skip CTPA
+T:  check outcome @outcome=false @time=2025-08-17</pre></div>
+
+        <p class="note">Happy structured writing. Keep it mildly geeky.</p>
+      </div>
+    </div>
+
+    <script>
+      (function initLang(){
+        try {
+          const saved = localStorage.getItem('ewml-lang');
+          const lang = (saved === 'en' || saved === 'ko') ? saved : 'ko';
+          setLang(lang, true);
+        } catch(e) { /* noop */ }
+      })();
+      function setLang(lang, init){
+        const html = document.documentElement;
+        html.setAttribute('data-lang', lang);
+        html.setAttribute('lang', lang);
+        const btnKo = document.getElementById('btn-ko');
+        const btnEn = document.getElementById('btn-en');
+        if (btnKo && btnEn) {
+          if (lang === 'ko') { btnKo.classList.add('active'); btnEn.classList.remove('active'); }
+          else { btnEn.classList.add('active'); btnKo.classList.remove('active'); }
+        }
+        if (!init) {
+          try { localStorage.setItem('ewml-lang', lang); } catch(e) {}
+        }
+      }
+      window.setLang = setLang;
+    </script>
+  </body>
+</html>
