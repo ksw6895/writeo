@@ -73,6 +73,9 @@ E+: 근거 한 줄 @ref=H1, @grade=moderate+
 E-: 반증 한 줄 @ref=H1, @LR=0.33
 D: if p(H1) ≥ 0.6 => 행동 X"
           />
+          <div className="small muted" style={{marginTop:8}}>
+            힌트: 왼쪽 에디터에 직접 EWML을 쓰거나, 오른쪽 상단의 <strong>AI Assist</strong> 패널에서 자유 서술을 변환해 적용하세요.
+          </div>
         </div>
       </div>
     )

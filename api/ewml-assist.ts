@@ -8,6 +8,7 @@ interface RequestBody {
   options?: {
     language?: 'ko' | 'en'
     includePriors?: boolean
+    model?: string
   }
 }
 
@@ -57,7 +58,7 @@ export default async function handler(req: Request): Promise<Response> {
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'Missing GEMINI_API_KEY' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
   }
-  const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash'
+  const model = body.options?.model || process.env.GEMINI_MODEL || 'gemini-1.5-flash'
   const apiBase = process.env.GEMINI_API_BASE || 'https://generativelanguage.googleapis.com'
   const apiVersion = process.env.GEMINI_API_VERSION || 'v1beta' // allow 'v1' or 'v1beta' or 'auto'
   const buildEndpoint = (version: string) => `${apiBase}/${version}/models/${model}:generateContent?key=${apiKey}`

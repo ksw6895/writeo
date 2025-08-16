@@ -4,6 +4,7 @@ import EditorPanel from './components/EditorPanel'
 import OutlinePanel from './components/OutlinePanel'
 import GraphPanel from './components/GraphPanel'
 import ConsolePanel from './components/ConsolePanel'
+import AIPanel from './components/AIPanel'
 import LearnPanel from './components/LearnPanel'
 import { parseEWML } from './ewml/parser'
 import { compute } from './ewml/engine'
@@ -29,6 +30,7 @@ export default function App() {
   return (
     <div className="app">
       <EditorPanel value={doc} onChange={setDoc} onLoadDemo={loadDemo} />
+      <AIPanel editorValue={doc} setEditorValue={setDoc} />
       <OutlinePanel parsed={parsed} computed={computed} />
       <GraphPanel parsed={parsed} computed={computed} />
       <ConsolePanel lints={computed.lints} />
