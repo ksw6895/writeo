@@ -60,6 +60,7 @@
           </div>
           <a class="btn" href="/pad" title="Open EWML Pad">🧪 Open Pad</a>
           <a class="btn" href="/demo.ewml" title="Download demo">📄 Demo</a>
+          <a class="btn" href="/ewml-user-guide.md" title="Markdown Guide">📘 User Guide</a>
         </div>
       </div>
 
@@ -141,6 +142,12 @@ p = 1 / (1 + e^{-lo})</pre></div>
           <div class="card"><h3>Outline</h3><p>H/D/T 요약. H별 prior → posterior, Σ ln(LR) 표시.</p></div>
           <div class="card"><h3>Graph</h3><p>H 노드와 E± 노드, 증거→가설 간선 시각화.</p></div>
           <div class="card"><h3>Console</h3><p><code>@ref</code> 누락, 잘못된 LR, prior 없음, <code>@p</code>/<code>@lo</code> 불일치 등을 경고.</p></div>
+        </div>
+
+        <h2>AI Assist (LLM)</h2>
+        <div class="card">
+          <p>에디터 상단의 “AI 변환/AI 보강”으로 자유 서술을 EWML로 변환하거나 메타(@ref, @grade/@LR, @kappa, @p)를 채울 수 있습니다.</p>
+          <p class="note">배포 환경(Vercel)에서 <code>GEMINI_API_KEY</code>를 설정해야 동작합니다. 선택적으로 <code>GEMINI_MODEL</code> (예: <code>gemini-2.5-flash</code>), <code>GEMINI_API_VERSION</code> (<code>v1</code>|<code>v1beta</code>|<code>auto</code>), <code>GEMINI_API_BASE</code>를 지정할 수 있습니다. 기본은 <code>gemini-1.5-flash</code>/<code>v1beta</code>입니다.</p>
         </div>
 
         <h2>베스트 프랙티스</h2>

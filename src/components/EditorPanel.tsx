@@ -1,5 +1,5 @@
 
-  import React from 'react'
+  import React, { useState } from 'react'
 
   interface Props {
     value: string
@@ -8,6 +8,7 @@
   }
 
   export default function EditorPanel({ value, onChange, onLoadDemo }: Props) {
+    const [aiBusy, setAiBusy] = useState(false)
     function normalizeRoles(v: string): string {
       // Normalize role tokens at start of lines: h/h1/e+/e-/r/c/d/t/m -> uppercase
       return v.replace(/^(h\d*|e\+|e-|r|c|d|t|m)(\s*:\s*)/gim, (_m, role: string, sep: string) => {
@@ -22,12 +23,41 @@
       const normalized = normalizeRoles(next)
       onChange(normalized)
     }
+
+    async function callAI(mode: 'translate'|'enrich') {
+      if (aiBusy) return
+      setAiBusy(true)
+      try {
+        const res = await fetch('/api/ewml-assist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode, input: value, options: { language: 'ko', includePriors: mode === 'translate' } })
+        })
+        if (!res.ok) {
+          const text = await res.text()
+          alert(`AI 오류: ${res.status}\n${text}`)
+          return
+        }
+        const data = await res.json()
+        if (typeof data.output === 'string' && data.output.trim()) {
+          onChange(data.output)
+        } else {
+          alert('AI 응답이 비어 있습니다.')
+        }
+      } catch (e: any) {
+        alert('AI 호출 실패: ' + (e?.message || e))
+      } finally {
+        setAiBusy(false)
+      }
+    }
     return (
       <div className="panel">
         <header className="row">
           <div>Editor <span className="badge">EWML</span></div>
           <div className="row">
             <a className="btn" href="/" target="_blank" rel="noreferrer">Guide</a>
+            <button className="btn" disabled={aiBusy || !value.trim()} onClick={()=>callAI('translate')}>{aiBusy ? 'AI…' : 'AI 변환'}</button>
+            <button className="btn" disabled={aiBusy || !value.trim()} onClick={()=>callAI('enrich')}>{aiBusy ? 'AI…' : 'AI 보강'}</button>
             <button className="btn" onClick={()=>onLoadDemo()}>샘플 불러오기</button>
             <button className="btn" onClick={()=>navigator.clipboard.writeText(value)}>복사</button>
           </div>
