@@ -24,7 +24,7 @@ export default function LearnPanel({ parsed, computed }: Props) {
   const [lesson, setLesson] = useState<Lesson|null>(null)
 
   useEffect(()=>{
-    fetch('/src/lessons/lesson1.json').then(r=>r.json()).then(setLesson).catch(()=>{})
+    fetch('/lessons/lesson1.json').then(r=>r.json()).then(setLesson).catch(()=>{})
   }, [])
 
   function checkStep(s: LessonStep): boolean {
