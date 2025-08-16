@@ -20,6 +20,7 @@ yarn-error.log*
 .env
 .env.*
 *.local
+tsconfig.tsbuildinfo
 
 # Windows ADS artifacts
 *:Zone.Identifier

@@ -1,1 +1,0 @@
-{"root":["./src/App.tsx","./src/main.tsx","./src/components/ConsolePanel.tsx","./src/components/EditorPanel.tsx","./src/components/GraphPanel.tsx","./src/components/LearnPanel.tsx","./src/components/OutlinePanel.tsx","./src/ewml/engine.ts","./src/ewml/parser.ts"],"version":"5.9.2"}
